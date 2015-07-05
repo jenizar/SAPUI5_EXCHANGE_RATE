@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html><head>
+<meta name="description" content="UI5 table example with local JSON model" />
+  <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+  <meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
+
+  <title>Kurs BSM</title>
+
+  <!-- Load UI5, select gold reflection theme and the "commons" and "table" control libraries -->
+  <script id='sap-ui-bootstrap' type='text/javascript'
+    src='https://openui5.hana.ondemand.com/resources/sap-ui-core.js'
+    data-sap-ui-theme='sap_bluecrystal'
+    data-sap-ui-libs='sap.ui.commons,sap.ui.table'></script>
+
+<style type="text/css">
+h5 {text-align: right}
+h5 {display: block}
+</style>
+
+ <script type="text/javascript">
+
+      // create a "json" Model
+
+ var url = 'http://localhost/testapp/bsm.php';
+      var oModel = new sap.ui.model.json.JSONModel();
+
+      $.ajax({
+          url : url,
+          //jsonpCallback : 'getJSON',
+          //contentType : 'application/json',
+          //dataType : 'jsonp',
+          success : function(data, textStatus, jqXHR) {
+           // alert("success");
+              oModel.setData(data);
+              sap.ui.getCore().setModel(oModel);
+			  
+		var oAppHeader = new sap.ui.commons.ApplicationHeader("appHeader"); 
+
+		//configure the branding area
+		oAppHeader.setLogoSrc("http://www.sap.com/global/images/SAPLogo.gif");
+		oAppHeader.setLogoText("Bank Syariah Mandiri - www.syariahmandiri.co.id");
+
+		//configure the welcome area
+		oAppHeader.setDisplayWelcome(true);
+		oAppHeader.setUserName("John Eswin Nizar");
+
+		//configure the log off area
+		oAppHeader.setDisplayLogoff(true);
+            oAppHeader.placeAt("content");
+			  
+			  
+var oTable = new sap.ui.table.Table({
+  title : "Kurs Bank Syariah Mandiri",
+  selectionMode : sap.ui.table.SelectionMode.Single,
+  navigationMode : sap.ui.table.NavigationMode.Paginator,
+});
+
+//Define the columns and the control templates to be used
+oTable.addColumn(new sap.ui.table.Column({
+  label : new sap.ui.commons.Label({
+    text : "Kurs"
+  }),
+  template : new sap.ui.commons.TextView().bindProperty("text", "kurs"),
+  width : "10px"
+}));
+
+oTable.addColumn(new sap.ui.table.Column({
+  label : new sap.ui.commons.Label({
+    text : "Beli"
+  }),
+  template : new sap.ui.commons.TextView().bindProperty("text", "beli"),
+  width : "10px"
+}));
+
+oTable.addColumn(new sap.ui.table.Column({
+  label : new sap.ui.commons.Label({
+    text : "Jual"
+  }),
+  template : new sap.ui.commons.TextView().bindProperty("text", "jual"),
+  width : "10px"
+}));
+
+var TZOffsetMs = new Date(0).getTimezoneOffset()*60*1000;
+
+     var aData = oModel.getProperty("/hasil");
+
+        oModel.setData({modelData: aData});
+    // create a JSONModel, fill in the data and bind the Table to this model
+    oTable.setModel(oModel);
+    oTable.bindRows("/modelData");
+
+    // finally place the Table into the UI
+    oTable.placeAt("content");
+
+          },
+
+          error: function(xhr, testStatus, error) {
+              console.log(testStatus);
+              console.log(xhr);
+              console.log(error);
+          }
+
+       });
+
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1; //January is 0!
+var yyyy = today.getFullYear();
+
+if(dd<10) {
+    dd='0'+dd
+} 
+
+if(mm<10) {
+    mm='0'+mm
+} 
+today = dd+'/'+mm+'/'+yyyy;
+  document.write("<h5>" + today + "</h5>");
+	   
+  </script>  
+  
+  </head>
+  <body class='sapUiBody'>
+    <div id='content'></div>
+  </body>
+</html>
